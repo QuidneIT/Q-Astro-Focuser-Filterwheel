@@ -1,0 +1,20 @@
+﻿--------------------------------------------------------------------------------
+ASCOM Management driver for Q-Astro FocusFilter
+To be used with Q-Astro FocusFilter v1
+
+Description:	Q-Astro (QA) Controller drivers is part of a LocalServer ASCOM Solution
+		which uses an Arduino UNO board to control FilterWheel motor, Focuser motor
+                & Power Relays through a single communication channel (USB Cable)
+
+Implements:	ASCOM QA Focus & Filterwheel version: 2.0.0
+Author:		(RvE) Raoul van Eijndhoven Support@quidne-it.com
+
+
+Verion Log:
+
+Date	    Who	Vers	Description
+----------  ---	-----	-------------------------------------------------------
+11-02-2019  RvE	1.0.0	Initial edit, created from QA-Controller 4.6
+07-12-2019  RvE	1.5.1	Complete redesign of code and UI.
+06-03-2021  RvE 2.0.0	Rewrite of Arduino Code and new updated Schematic
+			Restructure of Folders for GitHub

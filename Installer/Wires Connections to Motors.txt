@@ -1,0 +1,4 @@
+1 - 1B - Short stripe	- Black
+2 - 1A - X		- Green
+3 - 2A - Long stripe	- Blue
+4 - 2B - Blank		- Red
