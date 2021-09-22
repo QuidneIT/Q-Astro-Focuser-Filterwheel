@@ -3,9 +3,9 @@
 
 #define fSTARTPOSITION 0    // Define the Start Position of the Focuser when the system is started.
 #define fMOTORFREQ 200      // Motor steps per revolution. Most steppers are 200 steps or 1.8 degrees/step
-#define fMOTOR_SPEED 50     // Set the motor speed. 150 gives a smooth rotation.
+#define fMOTOR_SPEED 300    // Set the motor speed. 150 gives a smooth rotation.
 #define fMaxStep 5000       // Set the Max single focus adjustment before a delay needs to be added. This is added as the motor starts to stutter otherwise
-#define fMaxPosition 32000  // Define the Max Focuser position. This is defined in steps of the motor. 
+#define fMaxPosition 99999  // Define the Max Focuser position. This is defined in steps of the motor. 
 #define fMinPosition 0      // Define the Min Focuser position.
 #define fEEPROMStart 100    // The starting address for reading and writing the Focuser Position to/from EEPROM
 #define fSTEPSTYLE SINGLE
@@ -45,14 +45,14 @@
 DRV8825 focuser(fMOTORFREQ, fDIR, fSTEP, fENABLE, fMODE0, fMODE1, fMODE2);
 
 // This sets the Current Focusser Wheel Position. Always starts in position 1.
-int fCurrentPosition;
+long fCurrentPosition;
 
 /* ---------------------------------------------------------------------------------------------------------------------------- */
 /* End of Motor2 Definitions */
 
 void InitFocuser()
 {
-  int memFocuserPos = EEPROMReadInt(fEEPROMStart);
+  long memFocuserPos = EEPROMReadInt(fEEPROMStart);
   if (memFocuserPos > 0)
     {fCurrentPosition = memFocuserPos;}
   else
@@ -103,33 +103,35 @@ void DoFocuserAction(String ASCOMcmd)
     }
 }
 
-void MoveFocuserAndReduce(int steps)
+void MoveFocuserAndReduce(long steps)
 {
-  int mxStep = fMaxStep;
-  int nextPos = fCurrentPosition + steps;
+  long nextPos = fCurrentPosition + steps;
+  long mxStep = fMaxStep;
+  
+//  SendSerialCommand(focuserId,steps);
+//  SendSerialCommand(focuserId,fCurrentPosition);
+//  SendSerialCommand(focuserId,nextPos);
+
+  if(nextPos < 0 || nextPos > fMaxPosition || nextPos == fCurrentPosition) {
+    SendSerialCommand(focuserId,fCurrentPosition);
+    return;
+  }
 
   if(nextPos != fCurrentPosition) {
-    if(nextPos < 0 || nextPos > fMaxPosition) {
-      SendSerialCommand(focuserId,"-1");
-      return;
-    }
-    else
-    {
-      if (steps < 0)
-        {mxStep = -fMaxStep;}
+    if (steps < 0)
+      {mxStep = -fMaxStep;}         // If focusser is reduced make sure to use the neg nr of Max Step Size.
   
-      while (abs(steps) > fMaxStep)
-      {
-        SetFocuserPosition(mxStep,false);
-        steps = steps - mxStep;
-        delay(1000);                  // Set a delay a single move is bigger than the 
-      }
-      SetFocuserPosition(steps,true);
+    while (abs(steps) > fMaxStep)
+    {
+      SetFocuserPosition(mxStep,false);
+      steps = steps - mxStep;
+      delay(1000);                  // Set a delay a single move is bigger than the max step size.
     }
+    SetFocuserPosition(steps,true);
   }
 }
 
-void SetFocuserPosition(int steps, bool reportBack)
+void SetFocuserPosition(long steps, bool reportBack)
 {
   focuser.enable();
   focuser.setMicrostep(fMICROSTEPS);   // Set microstep mode to 1:8

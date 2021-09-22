@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ASCOM.QA.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ASCOM.QAstroFF.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="COMPort" Type="System.String" Scope="User">
@@ -24,9 +24,9 @@
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;LP&lt;/string&gt;
-  &lt;string&gt;UHC&lt;/string&gt;
-  &lt;string&gt;OIII&lt;/string&gt;
-  &lt;string&gt;Ha&lt;/string&gt;
+  &lt;string&gt;Triband&lt;/string&gt;
+  &lt;string&gt;H-Beta&lt;/string&gt;
+  &lt;string&gt;Yellow&lt;/string&gt;
   &lt;string&gt;Spectro&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
@@ -42,20 +42,6 @@
     </Setting>
     <Setting Name="Position" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="Relays" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
-&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
-  &lt;string&gt;Camera&lt;/string&gt;
-  &lt;string&gt;AstroEQ&lt;/string&gt;
-  &lt;string&gt;Dew Heater&lt;/string&gt;
-&lt;/ArrayOfString&gt;</Value>
-    </Setting>
-    <Setting Name="BaseRelayID" Type="System.String" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="BasePowerSerial" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

@@ -12,7 +12,7 @@ namespace ASCOM.QAstroFF.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.2.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -100,9 +100,9 @@ namespace ASCOM.QAstroFF.Properties {
         [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
 <ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
   <string>LP</string>
-  <string>UHC</string>
-  <string>OIII</string>
-  <string>Ha</string>
+  <string>Triband</string>
+  <string>H-Beta</string>
+  <string>Yellow</string>
   <string>Spectro</string>
 </ArrayOfString>")]
         public global::System.Collections.Specialized.StringCollection FilterNames {
@@ -142,47 +142,6 @@ namespace ASCOM.QAstroFF.Properties {
             }
             set {
                 this["Position"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
-<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-  <string>Camera</string>
-  <string>AstroEQ</string>
-  <string>Dew Heater</string>
-</ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection Relays {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["Relays"]));
-            }
-            set {
-                this["Relays"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public string BaseRelayID {
-            get {
-                return ((string)(this["BaseRelayID"]));
-            }
-            set {
-                this["BaseRelayID"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string BasePowerSerial {
-            get {
-                return ((string)(this["BasePowerSerial"]));
-            }
-            set {
-                this["BasePowerSerial"] = value;
             }
         }
     }

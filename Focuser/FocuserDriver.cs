@@ -172,7 +172,6 @@ namespace ASCOM.QAstroFF.Focuser
             }
         }
 
-
         public string DriverInfo
         {
             get
@@ -253,11 +252,11 @@ namespace ASCOM.QAstroFF.Focuser
         {
             get
             {
-                string recMaxPosition = SendCommand("s");
-                focuserMaxStep = Convert.ToInt32(recMaxPosition);
+                string recMaxStep = SendCommand("s");
+                focuserMaxStep = Convert.ToInt32(recMaxStep);
 
-                SharedResources.tl.LogMessage(driverShortName + " MaxIncrement Get", focuserMaxPos.ToString());
-                return Convert.ToInt32(focuserMaxPos); // Maximum change in one move
+                SharedResources.tl.LogMessage(driverShortName + " MaxIncrement Get", focuserMaxStep.ToString());
+                return Convert.ToInt32(focuserMaxStep); // Maximum change in one move
             }
         }
 

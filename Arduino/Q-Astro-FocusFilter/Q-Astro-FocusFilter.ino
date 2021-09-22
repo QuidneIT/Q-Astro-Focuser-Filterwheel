@@ -5,7 +5,7 @@
  * A copy of this license has been included with this distribution in the file LICENSE.
  * 
  * Q-Astro FocusFilter Code for Focuser & FilterWheel.
- * Version: 2.0
+ * Version: 2.0.6
  * 
  * Copyright (c)2021 Quidne IT Ltd.
  * 
@@ -16,7 +16,8 @@
 #include "DRV8825.h"
 #include <math.h>
 
-#define DEVICE_RESPONSE "Q-Astro FocusFilter ver 2.0"
+#define DEVICE_RESPONSE "Q-Astro FocusFilter ver 2.0.6"
+#define dEEPROMStart 500   //Eprom position to define Debug on or off.
 
 #define filterWheelId 'w'
 #define focuserId 'f'
@@ -27,11 +28,11 @@ bool ASCOMcmdComplete;
 void setup() 
 {
   InitSerial();
-  Serial.println("Init Filter Wheel..");
+//  Serial.println("Init Filter Wheel..");
   InitFilterWheel();
-  Serial.println("Init Focuser..");
+//  Serial.println("Init Focuser..");
   InitFocuser();
-  Serial.println("Ready..");
+//  Serial.println("Ready..");
 }
 
 void loop() {

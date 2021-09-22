@@ -28,7 +28,8 @@ namespace ASCOM.QAstroFF
         private void btnOK_Click(object sender, EventArgs e)
         {
             int i = 0;
-            foreach(DataGridViewRow row in filterDataGrid.Rows)
+
+            foreach (DataGridViewRow row in filterDataGrid.Rows)
             {
                 Properties.Settings.Default.FilterNames[i] = row.Cells["FilterName"].Value.ToString();
                 Properties.Settings.Default.FocusOffsets[i] = row.Cells["FilterOffset"].Value.ToString();
@@ -112,7 +113,7 @@ namespace ASCOM.QAstroFF
             {
                 string filterName = Properties.Settings.Default.FilterNames[i];
                 string filterOffset = Properties.Settings.Default.FocusOffsets[i];
-                filterDataGrid.Rows.Add(i, filterName, filterOffset);
+                filterDataGrid.Rows.Add((i+1), filterName, filterOffset);
             }
             tabComPort.Show();
         }

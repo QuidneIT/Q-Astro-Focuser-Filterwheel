@@ -10,7 +10,7 @@
 #define wSTEPSTYLE DOUBLE
 #define wMICROSTEPS 8
 
-int wCurrentPosition = 1;    // This sets the Current Filter Wheel Position. This will be read from EEPROM but initial value will be position 1.
+int wCurrentPosition = 0;    // This sets the Current Filter Wheel Position. This will be read from EEPROM but initial value will be position 1.
 
 // All the wires needed for full functionality
 #define wDIR 13  
@@ -76,10 +76,9 @@ int DoFilterWheelAction(String ASCOMcmd)
         break;
 
     case 's':  //Case the function is for the FilterWheel
-
         if (ASCOMcmd.substring(1,ASCOMcmd.length()-1).toInt() > nFilter) {    //Only do something if the new position is different from the current position.
           nFilter = ASCOMcmd.substring(1,ASCOMcmd.length()-1).toInt();
-          if (nFilter > 0)
+//          if (nFilter > 0)
             MoveFilter(nFilter);
         }
         break;
@@ -127,7 +126,7 @@ void MoveFilterWheel(int wMove)
 int getShortestPathToNextFilterPosition(int wNextPosition)
 {
     int steps = wNextPosition - wCurrentPosition;
-    
+
     if (abs(steps) > MaxMoveSteps)
     {
       steps = wNRFILTERS - abs(steps);

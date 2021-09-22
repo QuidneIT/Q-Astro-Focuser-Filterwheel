@@ -87,7 +87,7 @@
             // btnFocusReset
             // 
             this.btnFocusReset.Highlight = true;
-            this.btnFocusReset.Location = new System.Drawing.Point(102, 48);
+            this.btnFocusReset.Location = new System.Drawing.Point(113, 40);
             this.btnFocusReset.Name = "btnFocusReset";
             this.btnFocusReset.Size = new System.Drawing.Size(96, 35);
             this.btnFocusReset.Style = MetroFramework.MetroColorStyle.Lime;
@@ -103,7 +103,7 @@
             this.label4.ForeColor = System.Drawing.Color.YellowGreen;
             this.label4.Location = new System.Drawing.Point(10, 6);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(164, 26);
+            this.label4.Size = new System.Drawing.Size(161, 26);
             this.label4.TabIndex = 6;
             this.label4.Text = "Focus Position:";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -137,7 +137,7 @@
             // lbltxtAstroStatus
             // 
             this.lbltxtAstroStatus.FontWeight = MetroFramework.MetroLabelWeight.Regular;
-            this.lbltxtAstroStatus.Location = new System.Drawing.Point(10, 240);
+            this.lbltxtAstroStatus.Location = new System.Drawing.Point(3, 230);
             this.lbltxtAstroStatus.Name = "lbltxtAstroStatus";
             this.lbltxtAstroStatus.Size = new System.Drawing.Size(198, 23);
             this.lbltxtAstroStatus.Style = MetroFramework.MetroColorStyle.Lime;
@@ -150,7 +150,7 @@
             // lblQAStatus
             // 
             this.lblQAStatus.FontWeight = MetroFramework.MetroLabelWeight.Regular;
-            this.lblQAStatus.Location = new System.Drawing.Point(201, 241);
+            this.lblQAStatus.Location = new System.Drawing.Point(188, 231);
             this.lblQAStatus.Name = "lblQAStatus";
             this.lblQAStatus.Size = new System.Drawing.Size(109, 22);
             this.lblQAStatus.Style = MetroFramework.MetroColorStyle.Lime;
@@ -255,9 +255,9 @@
             this.pnlFilter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pnlFilter.Controls.Add(this.label3);
             this.pnlFilter.Controls.Add(this.lblSelectedFilterName);
-            this.pnlFilter.Location = new System.Drawing.Point(293, 139);
+            this.pnlFilter.Location = new System.Drawing.Point(332, 139);
             this.pnlFilter.Name = "pnlFilter";
-            this.pnlFilter.Size = new System.Drawing.Size(206, 98);
+            this.pnlFilter.Size = new System.Drawing.Size(167, 88);
             this.pnlFilter.TabIndex = 50;
             // 
             // pnlFocus
@@ -268,20 +268,20 @@
             this.pnlFocus.Controls.Add(this.label4);
             this.pnlFocus.Location = new System.Drawing.Point(9, 139);
             this.pnlFocus.Name = "pnlFocus";
-            this.pnlFocus.Size = new System.Drawing.Size(272, 98);
+            this.pnlFocus.Size = new System.Drawing.Size(317, 88);
             this.pnlFocus.TabIndex = 51;
             // 
             // lblFocusPos
             // 
             this.lblFocusPos.BackColor = System.Drawing.Color.Black;
             this.lblFocusPos.ForeColor = System.Drawing.Color.Red;
-            this.lblFocusPos.Format = "0000";
+            this.lblFocusPos.Format = "000000";
             this.lblFocusPos.Location = new System.Drawing.Point(178, 4);
-            this.lblFocusPos.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lblFocusPos.Margin = new System.Windows.Forms.Padding(4);
             this.lblFocusPos.Name = "lblFocusPos";
             this.lblFocusPos.Renderer = null;
             this.lblFocusPos.Signed = false;
-            this.lblFocusPos.Size = new System.Drawing.Size(78, 28);
+            this.lblFocusPos.Size = new System.Drawing.Size(122, 28);
             this.lblFocusPos.TabIndex = 35;
             this.lblFocusPos.Value = 0D;
             // 
@@ -317,12 +317,12 @@
             this.lblAbout.Text = "?";
             this.lblAbout.Click += new System.EventHandler(this.lblAbout_Click);
             // 
-            // ControlApp
+            // FocusFilterApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(511, 272);
+            this.ClientSize = new System.Drawing.Size(511, 261);
             this.Controls.Add(this.lblAbout);
             this.Controls.Add(this.lblMinimize);
             this.Controls.Add(this.lblCaption);
@@ -339,7 +339,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.Name = "ControlApp";
+            this.Name = "FocusFilterApp";
             this.Text = "Q-Astro Focuser & Filter App";
             this.TransparencyKey = System.Drawing.Color.Pink;
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FormMain_MouseDown);
