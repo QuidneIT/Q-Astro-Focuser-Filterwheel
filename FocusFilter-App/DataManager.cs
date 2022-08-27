@@ -86,16 +86,33 @@ namespace ASCOM.QAstroFF
 
         private void InitialiseFilter()
         {
-            if (aFilter.Connected)
-                Read_FilterPosition();
+            try
+            {
+                aFilter.Connected = true;
+                if (aFilter.Connected)
+                    Read_FilterPosition();
+            }
+            catch (Exception ex)
+            {
+                aFilter.Connected = false;
+            }
         }
 
         private void InitialiseFocuser()
         {
-            if (aFocuser.Connected)
+            try
             {
-                dMaxFocusPosition = aFocuser.MaxStep;
-                Read_FilterPosition();
+                aFocuser.Connected = true;
+                if (aFocuser.Connected)
+                {
+                    dMaxFocusPosition = aFocuser.MaxStep;
+                    Read_FilterPosition();
+                }
+            }
+            catch(Exception ex)
+            {
+                aFocuser.Connected = false;
+                dMaxFocusPosition = 0;
             }
         }
 
@@ -111,7 +128,7 @@ namespace ASCOM.QAstroFF
 
         private void Read_FocuserPosition()
         {
-            if (bQAConnected)
+            if (aFocuser.Connected)
             {
                 try
                 {
@@ -119,6 +136,7 @@ namespace ASCOM.QAstroFF
                 }
                 catch (Exception error)
                 {
+                    bQAConnected = false;
                     QAShowErrorMsg(error);
                 }
             }
@@ -128,7 +146,7 @@ namespace ASCOM.QAstroFF
 
         private void Read_FilterPosition()
         {
-            if (bQAConnected)
+            if (aFilter.Connected)
             {
                 try
                 {
@@ -145,6 +163,7 @@ namespace ASCOM.QAstroFF
                 }
                 catch (Exception error)
                 {
+                    bQAConnected = false;
                     QAShowErrorMsg(error);
                 }
             }
@@ -215,28 +234,31 @@ namespace ASCOM.QAstroFF
             {
                 try
                 {
-                    aFocuser.Connected = value;
-                    aFilter.Connected = value;
-
                     if (value)
                     {
+                        InitialiseFilter();
 
                         if (aFilter.Connected)
-                            InitialiseFilter();
-
-                        if (aFocuser.Connected)
                             InitialiseFocuser();
 
-                        if (!timerAstro.Enabled)
+                        if (!timerAstro.Enabled && aFilter.Connected && aFocuser.Connected)
+                        {
                             timerAstro.Start();
+                            bPrivateQAConnect = value;
+                        }
                     }
-
-                    bPrivateQAConnect = value;
+                    else
+                    {
+                        bPrivateQAConnect = value;
+                        aFocuser.Connected = value;
+                        aFilter.Connected = value;
+                    }
                 }
                 catch (Exception error)
                 {
+                    aFocuser.Connected = false;
+                    aFilter.Connected = false;
                     bPrivateQAConnect = false;
-                    QAShowErrorMsg(error);
                 }
             }
         }

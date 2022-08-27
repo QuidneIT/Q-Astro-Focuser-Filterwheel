@@ -149,36 +149,40 @@ namespace ASCOM.QAstroFF
                                 string answer = SharedResources.rawCommand("i","", true);
                                 if (!answer.Contains("Q-Astro"))
                                 {
+                                    SharedSerial.Connected = false;
                                     MessageBox.Show("QuidneArduino device not detected at port " + SharedResources.SharedSerial.PortName, "Device not detected", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     SharedResources.tl.LogMessage("Connected answer", "Wrong answer " + answer);
-                                    
                                 }
                                 else
-                                {
-                                    
-                                }
+                                    SharedSerial.Connected = true;
                             }
                             catch (System.IO.IOException exception)
                             {
+                                SharedSerial.Connected = false;
                                 MessageBox.Show("QuidneArduino Serial port not opened for " + SharedResources.SharedSerial.PortName, "Invalid port state", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 SharedResources.tl.LogMessage("Serial port not opened", exception.Message);
                             }
                             catch (System.UnauthorizedAccessException exception)
                             {
+                                SharedSerial.Connected = false;
                                 MessageBox.Show("QuidneArduino Access denied to serial port " + SharedResources.SharedSerial.PortName, "Access denied", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 SharedResources.tl.LogMessage("Access denied to serial port", exception.Message);
                             }
                             catch (ASCOM.DriverAccessCOMException exception)
                             {
-                                MessageBox.Show("QuidneArduino ASCOM driver exception: " + exception.Message, "ASCOM driver exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                SharedSerial.Connected = false;
+                                MessageBox.Show("QuidneArduino ASCOM driver exception", "ASCOM driver exception, no COM port selected", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                SharedResources.tl.LogMessage("QuidneArduino ASCOM driver exception", exception.Message);
                             }
                             catch (System.Runtime.InteropServices.COMException exception)
                             {
-                                MessageBox.Show("QuidneArduinoS erial port read timeout for port " + SharedResources.SharedSerial.PortName, "Timeout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                SharedSerial.Connected = false;
+                                MessageBox.Show("QuidneArduino Serial port read timeout for port " + SharedResources.SharedSerial.PortName, "Timeout", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 SharedResources.tl.LogMessage("QuidneArduino Serial port read timeout", exception.Message);
                             }
                         }
-                        s_z++;
+                        if (SharedSerial.Connected)
+                            s_z++;
                     }
                     else
                     {
