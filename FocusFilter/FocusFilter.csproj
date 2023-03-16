@@ -171,6 +171,7 @@
     <None Include="app.config" />
     <None Include="LocalServer.snk" />
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\ASCOM.QAstroFF.Properties.Settings.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

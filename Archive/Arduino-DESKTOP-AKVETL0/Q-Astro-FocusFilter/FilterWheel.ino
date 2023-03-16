@@ -55,13 +55,13 @@
 
 DRV8825 filterwheel(FILTER_MOTOR_FREQ, FILTER_DIR_PIN, FILTER_STEP_PIN, FILTER_ENABLE_PIN, FILTER_MS0_PIN, FILTER_MS1_PIN, FILTER_MS2_PIN);
 
-#define FILTER_DEF_STARTPOSITION 0     // Define the Start Position of the Filter Wheel when the system is started.
+#define FILTER_DEF_STARTPOSITION 1     // Define the Start Position of the Filter Wheel when the system is started.
 #define FILTER_DEF_NRFILTERS 5         // Define the Number of Filters on your Filter Wheel
 
 int filterPos = 0;    // This sets the Current Filter Wheel Position. This will be read from EEPROM but initial value will be position 1.
 
 int FILTER_MOTOR_ROTSTEPS = 218;                  //Nr of steps between 2 filter positions. This differ per Filterwheel and setup.
-
+int FILTER_MOTOR_COMPENSATION = 2;   //Nr of steps for drift compensation.
 int MaxMoveSteps = (int)round(FILTER_DEF_NRFILTERS/2);    //Max Steps for any filter wheel is a round down of the number of filters devided by 2. e.g. For 5 filters the max steps is 2.
 
 /* ---------------------------------------------------------------------------------------------------------------------------- */
@@ -124,13 +124,12 @@ int DoFilterWheelAction(String ASCOMcmd)
 {
   int nFilter = -1;
   
-  switch((char)ASCOMcmd[0]) 
-  {
-    case 'g':     //Get filterwheel position
+  switch((char)ASCOMcmd[0]) {
+    case 'g':     //Case the function is for the FilterWheel
         SendSerialCommand(filterWheelId,filterPos); 
         break;
 
-    case 's':  //Set FilterWheel position
+    case 's':  //Case the function is for the FilterWheel
         if (ASCOMcmd.substring(1,ASCOMcmd.length()-1).toInt() > nFilter) 
         {    //Only do something if the new position is different from the current position.
            nFilter = ASCOMcmd.substring(1,ASCOMcmd.length()-1).toInt();
@@ -138,11 +137,17 @@ int DoFilterWheelAction(String ASCOMcmd)
         }
         break;
 
-    case 'P': //Set Steps between Filter positions.
+    case 'p':
         if ((char)ASCOMcmd[1] != '#')
           FILTER_MOTOR_ROTSTEPS = ASCOMcmd.substring(1,ASCOMcmd.length()-1).toInt();
         SendSerialCommand(filterWheelId,FILTER_MOTOR_ROTSTEPS);
         break;              
+
+    case 'o':
+        if ((char)ASCOMcmd[1] != '#')
+          FILTER_MOTOR_COMPENSATION = ASCOMcmd.substring(1,ASCOMcmd.length()-1).toInt();
+        SendSerialCommand(filterWheelId,FILTER_MOTOR_COMPENSATION);
+        break; 
     }
 }
 

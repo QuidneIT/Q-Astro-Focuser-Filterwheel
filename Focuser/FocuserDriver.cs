@@ -43,14 +43,14 @@ namespace ASCOM.QAstroFF.Focuser
         private static string driverShortName = "Q-Astro Focuser";
         private static int interfaceVersion = 2;
 
-        internal static int focuserMaxPos;
         internal static int focuserCurPos;
-        internal static int focuserMaxStep;
 
         /// <summary>
         /// Private variable to hold the connected state
         /// </summary>
         private bool connectedState;
+
+        private string ASCOMfunction = "f";     //Define that we communicate Filterwheel to Arduino
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QAF"/> class.
@@ -63,9 +63,7 @@ namespace ASCOM.QAstroFF.Focuser
             connectedState = false; // Initialise connected to false
             SharedResources.tl.LogMessage(driverShortName, "Completed initialisation");
 
-            focuserMaxPos = 0;
             focuserCurPos = 0;
-            focuserMaxStep = 0;
         }
 
         //
@@ -97,15 +95,79 @@ namespace ASCOM.QAstroFF.Focuser
         {
             get
             {
-                SharedResources.tl.LogMessage(driverShortName + " SupportedActions Get", "Returning empty arraylist");
-                return new ArrayList();
+                var CustomActions = new ArrayList();
+                CustomActions.Add("ResetFocus");
+                CustomActions.Add("SetStepMode");
+                CustomActions.Add("GetStepMode");
+                CustomActions.Add("SetStepSize");
+                CustomActions.Add("GetMotorEnable");
+                CustomActions.Add("SetMotorEnable");
+                CustomActions.Add("DisableMotor");
+                CustomActions.Add("SetMaxStep");
+
+                string msgForLog = "";
+                foreach (String act in CustomActions)
+                    msgForLog = msgForLog + act + ",";
+
+                SharedResources.tl.LogMessage(driverShortName + " SupportedActions Get", msgForLog);
+                return CustomActions;
             }
         }
 
         public string Action(string actionName, string actionParameters)
         {
-            throw new ASCOM.ActionNotImplementedException(driverShortName + " Action " + actionName + " is not implemented by this driver");
+            String returnVal = "";
+            String action = "";
+
+            SharedResources.tl.LogMessage(driverShortName + "Action", actionName + "-" + actionParameters);
+
+            CheckConnected("Action");
+
+            switch (actionName)
+            {
+                case "SetMaxStep":
+                    action = "A";
+                    break;
+                case "GetMotorEnable":
+                    action = "d";
+                    actionParameters = "";
+                    break;
+                case "SetMotorEnable":
+                    action = "D";
+                    break;
+                case "ResetFocus":
+                    action = "r";
+                    actionParameters = "";
+                    break;
+                case "GetStepMode":
+                    action = "n";
+                    actionParameters = "";
+                    break;
+                case "SetStepMode":
+                    action = "N";
+                    break;
+                case "SetStepSize":
+                    action = "S";
+                    break;
+                case "GetMaxPosition":
+                    action = "x";
+                    actionParameters = "";
+                    break;
+                case "SetMaxPosition":
+                    action = "X";
+                    break;
+                case "DisableMotor":
+                    action = "y";
+                    break;
+                default:
+                    throw new ASCOM.ActionNotImplementedException(driverShortName + " Action " + actionName + " is not implemented by this driver");
+            }
+
+            returnVal = SharedResources.SendMessage(ASCOMfunction, action + actionParameters);
+
+            return returnVal;
         }
+
 
         public void CommandBlind(string command, bool raw)
         {
@@ -136,25 +198,46 @@ namespace ASCOM.QAstroFF.Focuser
             {
                 {
                     SharedResources.tl.LogMessage(driverShortName + " Connected Set", value.ToString());
+
                     if (value == IsConnected)
                         return;
 
                     if (value)
                     {
                         if (IsConnected) return;
+
                         SharedResources.tl.LogMessage(driverShortName + "Connected Set", "Connecting to port " + QAstroFF.Properties.Settings.Default.COMPort);
                         SharedResources.Connected = true;
                         connectedState = SharedResources.Connected;
 
-                        if (connectedState)
+                        if (IsConnected)
                         {
-                            focuserMaxStep = MaxIncrement;
+                            if (Properties.Settings.Default.ConfigChanged)
+                            {
+                                Action("SetMaxStep", Properties.Settings.Default.FocuserMaxStep.ToString());
+                                Action("SetStepSize", Properties.Settings.Default.FocuserStepSize.ToString());
+                                Action("SetMotorEnable", Properties.Settings.Default.FocuserMotorEnabled.ToString());
+                                Action("SetMaxPosition", Properties.Settings.Default.FocuserMaxPos.ToString());
+                                Action("SetStepMode", Properties.Settings.Default.FocuserStepMode.ToString());
+
+                                Properties.Settings.Default.ConfigChanged = false;
+                                Properties.Settings.Default.Save();
+                            }
+
+                            Properties.Settings.Default.FocuserMaxStep = MaxIncrement;
+                            Properties.Settings.Default.FocuserStepSize = StepSize;
+                            Properties.Settings.Default.FocuserMotorEnabled = Convert.ToInt16(Action("GetMotorEnable", ""));
+                            Properties.Settings.Default.FocuserMaxPos = Convert.ToInt32(Action("GetMaxPosition", ""));
+                            Properties.Settings.Default.FocuserStepMode = Convert.ToInt32(Action("GetStepMode", ""));
+
+                            Properties.Settings.Default.Save();
+
                             focuserCurPos = Position;
-                            focuserMaxPos = MaxStep;
                         }
                     }
                     else
                     {
+                        Action("DisableMotor","");
                         connectedState = false;
                         SharedResources.Connected = false;
                         SharedResources.tl.LogMessage(driverShortName + " Switch Connected Set", "Disconnected, " + SharedResources.connections + " connections left");
@@ -216,8 +299,6 @@ namespace ASCOM.QAstroFF.Focuser
 
         #region IFocuser Implementation
 
-        private string ASCOMfunction = "f";     //Define that we communicate Filterwheel to Arduino
-
         public bool Absolute
         {
             get
@@ -237,8 +318,15 @@ namespace ASCOM.QAstroFF.Focuser
         {
             get
             {
-                SharedResources.tl.LogMessage(driverShortName + " IsMoving Get", false.ToString());
-                return false;  // This focuser always moves instantaneously so no need for IsMoving ever to be True
+                string recIsMoving = SharedResources.SendMessage(ASCOMfunction, "b");
+
+                bool isMoving = false;
+                if (recIsMoving == "1")
+                    isMoving = true;
+
+                SharedResources.tl.LogMessage(driverShortName + " IsMoving Get", isMoving.ToString());
+
+                return isMoving;  // This focuser always moves instantaneously so no need for IsMoving ever to be True
             }
         }
 
@@ -252,8 +340,8 @@ namespace ASCOM.QAstroFF.Focuser
         {
             get
             {
-                string recMaxStep = SendCommand("s");
-                focuserMaxStep = Convert.ToInt32(recMaxStep);
+                string recMaxStep = SharedResources.SendMessage(ASCOMfunction,"a");
+                int focuserMaxStep = Convert.ToInt32(recMaxStep);
 
                 SharedResources.tl.LogMessage(driverShortName + " MaxIncrement Get", focuserMaxStep.ToString());
                 return Convert.ToInt32(focuserMaxStep); // Maximum change in one move
@@ -264,43 +352,45 @@ namespace ASCOM.QAstroFF.Focuser
         {
             get
             {
-                string recMaxPosition = SendCommand("x");
-                focuserMaxPos = Convert.ToInt32(recMaxPosition);
+                string recMaxPosition = SharedResources.SendMessage(ASCOMfunction,"x");
+                int focuserMaxPos = Convert.ToInt32(recMaxPosition);
 
                 SharedResources.tl.LogMessage(driverShortName + " MaxStep Get", focuserMaxPos.ToString());
                 return Convert.ToInt32(focuserMaxPos); // Maximum extent of the focuser, so position range is 0 to 10,000
             }
         }
-         
+
         public void Move(int nextPosition)         //Move to Next Position as this is an absolute Focuser.
         {
             if (IsMoving) return;
 
-            if (nextPosition != focuserCurPos)
+            if ((nextPosition != focuserCurPos) && (nextPosition > 0) && (nextPosition < (Properties.Settings.Default.FocuserMaxPos + 1)))
+            {
+                SharedResources.tl.LogMessage(driverShortName + " Next Position", nextPosition.ToString());
+                int recPosition = Convert.ToInt32(SharedResources.SendMessage(ASCOMfunction, "f" + nextPosition));
 
-                if ((nextPosition > 0) && (nextPosition < (focuserMaxPos+1)))
+                if (recPosition < 0)
                 {
-                    SharedResources.tl.LogMessage(driverShortName + " Next Position", nextPosition.ToString());
-                    int recPosition = Convert.ToInt32(SendCommand("f" + nextPosition));
-
-                    if (recPosition < 0)
-                    {
-                        SharedResources.tl.LogMessage(driverShortName + " Next Position Error received from Controller", "Next Position: " + nextPosition.ToString() + " CurPos: " + focuserCurPos.ToString());
-                        throw new ASCOM.InvalidValueException(driverShortName + " Next Position Error Received from Controller");
-                    }
-                    else
-                    {
-                        focuserCurPos = Convert.ToInt32(recPosition);
-                        SharedResources.tl.LogMessage(driverShortName + " New Current Position", focuserCurPos.ToString());
-                    }
+                    SharedResources.tl.LogMessage(driverShortName + " Next Position Error received from Controller", "Next Position: " + nextPosition.ToString() + " CurPos: " + focuserCurPos.ToString());
+                    throw new ASCOM.InvalidValueException(driverShortName + " Next Position Error Received from Controller");
                 }
+                else
+                {
+                    focuserCurPos = recPosition;
+                    SharedResources.tl.LogMessage(driverShortName + " New Current Position", focuserCurPos.ToString());
+                }
+            }
         }
 
         public int Position
         {
             get
             {
-                string recPosition = SendCommand("p");
+                CheckConnected("Get Position");
+
+                string recPosition = SharedResources.SendMessage(ASCOMfunction,"p");
+                if (recPosition == "")
+                    recPosition = "0";
                 SharedResources.tl.LogMessage(driverShortName + " Position", recPosition);
                 return Convert.ToInt32(recPosition);
             }
@@ -310,8 +400,11 @@ namespace ASCOM.QAstroFF.Focuser
         {
             get
             {
-                SharedResources.tl.LogMessage("StepSize Get", "Not implemented");
-                throw new ASCOM.PropertyNotImplementedException("StepSize", false);
+                string recStepSize = SharedResources.SendMessage(ASCOMfunction, "s");
+                double focuserStepSize = Convert.ToDouble(recStepSize);
+
+                SharedResources.tl.LogMessage(driverShortName + " StepSize Get", focuserStepSize.ToString());
+                return Convert.ToInt32(focuserStepSize); // Step Size in microns
             }
         }
 
@@ -343,20 +436,6 @@ namespace ASCOM.QAstroFF.Focuser
             }
         }
 
-        private string SendCommand(string cmd)
-        {
-            string strReceive = CommandString(cmd, true);
-
-            if (strReceive.Substring(0, 1) == ASCOMfunction)
-            {
-                int iPos = strReceive.IndexOf('#');
-                strReceive = strReceive.Substring(1, iPos - 1); //Start at 1 as 0 contains the Function which will be w.
-            }
-            else { strReceive = ""; }
-
-            return strReceive;
-        }
-
         #endregion
 
         #region Private properties and methods
@@ -368,7 +447,12 @@ namespace ASCOM.QAstroFF.Focuser
         /// </summary>
         private bool IsConnected
         {
-            get { return connectedState;}
+            get {
+                if (connectedState)
+                    return SharedResources.IsConnected();
+                else
+                    return connectedState; 
+            }
         }
 
         /// <summary>

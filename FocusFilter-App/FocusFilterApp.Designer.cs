@@ -30,14 +30,14 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FocusFilterApp));
-            this.btnQAConnect = new MetroFramework.Controls.MetroButton();
-            this.btnQASetup = new MetroFramework.Controls.MetroButton();
+            this.btnConnectDisconnect = new MetroFramework.Controls.MetroButton();
+            this.btnSetup = new MetroFramework.Controls.MetroButton();
             this.btnFocusReset = new MetroFramework.Controls.MetroButton();
             this.label4 = new System.Windows.Forms.Label();
             this.lblSelectedFilterName = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.lbltxtAstroStatus = new MetroFramework.Controls.MetroLabel();
-            this.lblQAStatus = new MetroFramework.Controls.MetroLabel();
+            this.lblStatus = new MetroFramework.Controls.MetroLabel();
             this.metroLabel3 = new MetroFramework.Controls.MetroLabel();
             this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -60,29 +60,29 @@
             this.pnlSetup.SuspendLayout();
             this.SuspendLayout();
             // 
-            // btnQAConnect
+            // btnConnectDisconnect
             // 
-            this.btnQAConnect.Highlight = true;
-            this.btnQAConnect.Location = new System.Drawing.Point(179, 45);
-            this.btnQAConnect.Name = "btnQAConnect";
-            this.btnQAConnect.Size = new System.Drawing.Size(96, 35);
-            this.btnQAConnect.Style = MetroFramework.MetroColorStyle.Lime;
-            this.btnQAConnect.TabIndex = 3;
-            this.btnQAConnect.Text = "Connect";
-            this.btnQAConnect.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.btnQAConnect.Click += new System.EventHandler(this.btnQAConnect_Click);
+            this.btnConnectDisconnect.Highlight = true;
+            this.btnConnectDisconnect.Location = new System.Drawing.Point(179, 45);
+            this.btnConnectDisconnect.Name = "btnConnectDisconnect";
+            this.btnConnectDisconnect.Size = new System.Drawing.Size(96, 35);
+            this.btnConnectDisconnect.Style = MetroFramework.MetroColorStyle.Lime;
+            this.btnConnectDisconnect.TabIndex = 3;
+            this.btnConnectDisconnect.Text = "Connect";
+            this.btnConnectDisconnect.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.btnConnectDisconnect.Click += new System.EventHandler(this.BtnConnectDisconnect_Click);
             // 
-            // btnQASetup
+            // btnSetup
             // 
-            this.btnQASetup.Highlight = true;
-            this.btnQASetup.Location = new System.Drawing.Point(65, 45);
-            this.btnQASetup.Name = "btnQASetup";
-            this.btnQASetup.Size = new System.Drawing.Size(99, 35);
-            this.btnQASetup.Style = MetroFramework.MetroColorStyle.Lime;
-            this.btnQASetup.TabIndex = 4;
-            this.btnQASetup.Text = "Setup";
-            this.btnQASetup.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.btnQASetup.Click += new System.EventHandler(this.btnQASetup_Click);
+            this.btnSetup.Highlight = true;
+            this.btnSetup.Location = new System.Drawing.Point(65, 45);
+            this.btnSetup.Name = "btnSetup";
+            this.btnSetup.Size = new System.Drawing.Size(99, 35);
+            this.btnSetup.Style = MetroFramework.MetroColorStyle.Lime;
+            this.btnSetup.TabIndex = 4;
+            this.btnSetup.Text = "Setup";
+            this.btnSetup.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.btnSetup.Click += new System.EventHandler(this.BtnSetup_Click);
             // 
             // btnFocusReset
             // 
@@ -94,7 +94,7 @@
             this.btnFocusReset.TabIndex = 8;
             this.btnFocusReset.Text = "Reset to 0";
             this.btnFocusReset.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.btnFocusReset.Click += new System.EventHandler(this.btnFocusReset_Click);
+            this.btnFocusReset.Click += new System.EventHandler(this.BtnFocusReset_Click);
             // 
             // label4
             // 
@@ -114,11 +114,10 @@
             this.lblSelectedFilterName.Font = new System.Drawing.Font("Verdana", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblSelectedFilterName.ForeColor = System.Drawing.Color.Red;
             this.lblSelectedFilterName.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblSelectedFilterName.Location = new System.Drawing.Point(3, 48);
+            this.lblSelectedFilterName.Location = new System.Drawing.Point(39, 40);
             this.lblSelectedFilterName.Name = "lblSelectedFilterName";
             this.lblSelectedFilterName.Size = new System.Drawing.Size(104, 27);
             this.lblSelectedFilterName.TabIndex = 6;
-            this.lblSelectedFilterName.Text = "SelFilter";
             this.lblSelectedFilterName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label3
@@ -147,18 +146,18 @@
             this.lbltxtAstroStatus.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.lbltxtAstroStatus.UseStyleColors = true;
             // 
-            // lblQAStatus
+            // lblStatus
             // 
-            this.lblQAStatus.FontWeight = MetroFramework.MetroLabelWeight.Regular;
-            this.lblQAStatus.Location = new System.Drawing.Point(188, 231);
-            this.lblQAStatus.Name = "lblQAStatus";
-            this.lblQAStatus.Size = new System.Drawing.Size(109, 22);
-            this.lblQAStatus.Style = MetroFramework.MetroColorStyle.Lime;
-            this.lblQAStatus.TabIndex = 2;
-            this.lblQAStatus.Text = "Disconnected";
-            this.lblQAStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblQAStatus.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.lblQAStatus.UseStyleColors = true;
+            this.lblStatus.FontWeight = MetroFramework.MetroLabelWeight.Regular;
+            this.lblStatus.Location = new System.Drawing.Point(188, 231);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(311, 22);
+            this.lblStatus.Style = MetroFramework.MetroColorStyle.Lime;
+            this.lblStatus.TabIndex = 2;
+            this.lblStatus.Text = "Disconnected";
+            this.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblStatus.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.lblStatus.UseStyleColors = true;
             // 
             // metroLabel3
             // 
@@ -206,7 +205,7 @@
             // 
             // timerUI
             // 
-            this.timerUI.Interval = 1500;
+            this.timerUI.Interval = 5000;
             this.timerUI.Tick += new System.EventHandler(this.TimerUI_Tick);
             // 
             // lblMinimize
@@ -214,27 +213,27 @@
             this.lblMinimize.AutoSize = true;
             this.lblMinimize.Location = new System.Drawing.Point(439, 6);
             this.lblMinimize.Name = "lblMinimize";
-            this.lblMinimize.Size = new System.Drawing.Size(15, 17);
+            this.lblMinimize.Size = new System.Drawing.Size(12, 13);
             this.lblMinimize.TabIndex = 21;
             this.lblMinimize.Text = "-";
-            this.lblMinimize.Click += new System.EventHandler(this.lblMinimize_Click);
+            this.lblMinimize.Click += new System.EventHandler(this.LblMinimize_Click);
             // 
             // lblClose
             // 
             this.lblClose.AutoSize = true;
             this.lblClose.Location = new System.Drawing.Point(481, 9);
             this.lblClose.Name = "lblClose";
-            this.lblClose.Size = new System.Drawing.Size(18, 17);
+            this.lblClose.Size = new System.Drawing.Size(15, 13);
             this.lblClose.TabIndex = 22;
             this.lblClose.Text = "X";
-            this.lblClose.Click += new System.EventHandler(this.lblClose_Click);
+            this.lblClose.Click += new System.EventHandler(this.LblClose_Click);
             // 
             // lblCaption
             // 
             this.lblCaption.AutoSize = true;
             this.lblCaption.Location = new System.Drawing.Point(0, 6);
             this.lblCaption.Name = "lblCaption";
-            this.lblCaption.Size = new System.Drawing.Size(310, 17);
+            this.lblCaption.Size = new System.Drawing.Size(250, 13);
             this.lblCaption.TabIndex = 24;
             this.lblCaption.Text = "Q-Astro Focuser and Filter Control Panel - ";
             // 
@@ -277,7 +276,7 @@
             this.lblFocusPos.ForeColor = System.Drawing.Color.Red;
             this.lblFocusPos.Format = "000000";
             this.lblFocusPos.Location = new System.Drawing.Point(178, 4);
-            this.lblFocusPos.Margin = new System.Windows.Forms.Padding(4);
+            this.lblFocusPos.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.lblFocusPos.Name = "lblFocusPos";
             this.lblFocusPos.Renderer = null;
             this.lblFocusPos.Signed = false;
@@ -289,8 +288,8 @@
             // 
             this.pnlSetup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pnlSetup.Controls.Add(this.label1);
-            this.pnlSetup.Controls.Add(this.btnQASetup);
-            this.pnlSetup.Controls.Add(this.btnQAConnect);
+            this.pnlSetup.Controls.Add(this.btnSetup);
+            this.pnlSetup.Controls.Add(this.btnConnectDisconnect);
             this.pnlSetup.Location = new System.Drawing.Point(69, 35);
             this.pnlSetup.Name = "pnlSetup";
             this.pnlSetup.Size = new System.Drawing.Size(376, 98);
@@ -312,21 +311,21 @@
             this.lblAbout.AutoSize = true;
             this.lblAbout.Location = new System.Drawing.Point(417, 6);
             this.lblAbout.Name = "lblAbout";
-            this.lblAbout.Size = new System.Drawing.Size(16, 17);
+            this.lblAbout.Size = new System.Drawing.Size(13, 13);
             this.lblAbout.TabIndex = 57;
             this.lblAbout.Text = "?";
-            this.lblAbout.Click += new System.EventHandler(this.lblAbout_Click);
+            this.lblAbout.Click += new System.EventHandler(this.LblAbout_Click);
             // 
             // FocusFilterApp
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(511, 261);
             this.Controls.Add(this.lblAbout);
             this.Controls.Add(this.lblMinimize);
             this.Controls.Add(this.lblCaption);
-            this.Controls.Add(this.lblQAStatus);
+            this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.lblClose);
             this.Controls.Add(this.lbltxtAstroStatus);
             this.Controls.Add(this.pnlFilter);
@@ -357,11 +356,11 @@
 
         #endregion
         private MetroFramework.Controls.MetroLabel lbltxtAstroStatus;
-        private MetroFramework.Controls.MetroLabel lblQAStatus;
+        private MetroFramework.Controls.MetroLabel lblStatus;
         private MetroFramework.Controls.MetroLabel metroLabel3;
         private MetroFramework.Controls.MetroLabel metroLabel1;
-        private MetroFramework.Controls.MetroButton btnQAConnect;
-        private MetroFramework.Controls.MetroButton btnQASetup;
+        private MetroFramework.Controls.MetroButton btnConnectDisconnect;
+        private MetroFramework.Controls.MetroButton btnSetup;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Timer timerUI;

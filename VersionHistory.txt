@@ -17,10 +17,18 @@ Date	    Who	Vers	Description
 11-02-2019  RvE	1.0.0	Initial edit, created from QA-Controller 4.6
 07-12-2019  RvE	1.5.1	Complete redesign of code and UI.
 06-03-2021  RvE 2.0.0	Rewrite of Arduino Code and new updated Schematic
-			Restructure of Folders for GitHub
+						Restructure of Folders for GitHub
 04-09-2021  RvE 2.0.5	Fixed several small bugs (Focuser Max Poc vs Max Step) and enable App to display 6 digits.
-			Updated Arduino code to allow Focusser step numbers greater than 32767 (e.g. convert int to long).
-			Change to focuser code to only accept relative focussing.
+						Updated Arduino code to allow Focusser step numbers greater than 32767 (e.g. convert int to long).
+						Change to focuser code to only accept relative focussing.
 21-09-2021  RvE 2.0.6	Fixed bug in the Filterwheel Arduino code where first filter was never be able to be selected in ASCOM.
-			Also fixed GUI for Setup to show first filter position is 1 and not 0.
+						Also fixed GUI for Setup to show first filter position is 1 and not 0.
 27-08-2022  RvE 2.0.7	Fixed bug to resolve exception errors when can not connect.
+16-03-2023  RvE 2.5.0	Cleanup of Arduino code.
+						Rewritten SharedResources.cs based on the latest code from Q-Astro Dew Monitor
+						Updating Focuser and Filterwheel ASCOM driver to reflect the updated SharedResources.cs
+						Rewrite of FocusFilterApp to implement learning from Q-Astr Dew Monitor App.
+						Add functionality to Arduino Focus for Getting & Setting data.
+						Update Focuser ASCOM driver to reflect the additional Gets & Sets of Data
+						Update the Setup Dialog to enable the entry of additional settings for the focuser.
+						Ensure that the Focuser Driver updates the Arduino settings when new settings where entered during setup.

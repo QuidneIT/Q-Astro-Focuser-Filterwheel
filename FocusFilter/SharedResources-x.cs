@@ -19,9 +19,6 @@ using System.Text;
 using ASCOM;
 using ASCOM.Utilities;
 using System.Windows.Forms;
-using System.Timers;
-using System.Diagnostics.PerformanceData;
-using System.Runtime.Remoting.Messaging;
 
 namespace ASCOM.QAstroFF
 {
@@ -35,22 +32,14 @@ namespace ASCOM.QAstroFF
     /// </summary>
     public static class SharedResources
     {
+        private static TraceLogger traceLogger;
+
         // object used for locking to prevent multiple drivers accessing common code at the same time
         private static readonly object lockObject = new object();
 
         // Shared serial port. This will allow multiple drivers to use one single serial port.
-        private static ASCOM.Utilities.Serial s_sharedSerial = new ASCOM.Utilities.Serial();        // Shared serial port
+        private static ASCOM.Utilities.Serial s_sharedSerial = new ASCOM.Utilities.Serial();		// Shared serial port
         private static int s_z = 0;     // counter for the number of connections to the serial port
-
-        private static TraceLogger traceLogger;
-
-        private const char ASCOMfunctionFocuser = 'f';     //Define that communicate Focuser to Arduino
-        private const char ASCOMfunctionFilter = 'w';     //Define that communicate Filterwheel to Arduino
-
-        private const string ASCOMIdentifier = "Q-Astro FocusFilter";
-
-
-        private const int SERIAL_CONNECTION_TIMEOUT = 5000;
 
         //
         // Public access to shared resources
@@ -61,23 +50,12 @@ namespace ASCOM.QAstroFF
             {
                 if (traceLogger == null)
                 {
-                    traceLogger = new TraceLogger("", "Q-Astro");
-
+                    traceLogger = new TraceLogger("", "QAstroFF");
                     traceLogger.Enabled = ASCOM.QAstroFF.Properties.Settings.Default.trace;
                 }
                 return traceLogger;
             }
         }
-
-        public static int Connections()
-        {
-            return s_z;
-        }
-
-
-        //
-        // Public access to shared resources
-        //
 
         #region single serial port connector
         //
@@ -112,63 +90,34 @@ namespace ASCOM.QAstroFF
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        /// 
+
         public static string SendMessage(string function, string message)
         {
-            try
+            lock (lockObject)
             {
-                lock (lockObject)
+                tl.LogMessage("QuidneArduino Controller", "Lock Object");
+
+                string msg = function + message + "#";
+
+                if (SharedSerial.Connected && !String.IsNullOrEmpty(msg))
                 {
-                    tl.LogMessage(ASCOMIdentifier, "Lock Object");
+                    tl.LogMessage("QuidneArduino Controller", "Send Msg: " + msg);
 
-                    string msg = function + message + "#";
+                    SharedSerial.ClearBuffers();
+                    SharedSerial.Transmit(msg);
+                    string strRec = SharedSerial.ReceiveTerminated("#");    
+                    SharedSerial.ClearBuffers();
 
-                    if (SharedSerial.Connected && !String.IsNullOrEmpty(msg))
-                    {
-                        tl.LogMessage(ASCOMIdentifier, "Send Msg: " + msg);
+                    tl.LogMessage("QuidneArduino Controller", "Response Msg: " + strRec);
 
-                        SharedSerial.ClearBuffers();
-                        SharedSerial.Transmit(msg);
-                        string strRec = SharedSerial.ReceiveTerminated("#");
-                        SharedSerial.ClearBuffers();
-
-                        tl.LogMessage(ASCOMIdentifier, "Raw Response Msg: " + strRec);
-
-                        strRec = cleanResponse(strRec);
-
-                        tl.LogMessage(ASCOMIdentifier, "Filtered Response Msg: " + strRec);
-
-                        return strRec;
-                    }
-                    else
-                    {
-                        tl.LogMessage(ASCOMIdentifier, "Not Connected or Empty Send Msg: " + message);
-                        return "";
-                    }
+                    return strRec;
+                }
+                else
+                {
+                    tl.LogMessage("QuidneArduino Controller", "Not Connected or Empty Send Msg: " + message);
+                    return "";
                 }
             }
-            catch 
-            {
-                SharedResources.connections = 0;
-                SharedResources.Connected = false;
-                return "-1";
-            }
-        }
-
-        private static string cleanResponse(string strRec)
-        {
-            int startPos = -1;
-
-            if (strRec.StartsWith(ASCOMfunctionFocuser.ToString()))
-                startPos = strRec.IndexOf(ASCOMfunctionFocuser);
-
-            else if (strRec.StartsWith(ASCOMfunctionFilter.ToString()))
-                startPos = strRec.IndexOf(ASCOMfunctionFilter);
-
-            strRec = strRec.Substring(startPos+1);
-            strRec = strRec.Trim('#');
-
-            return strRec;
         }
 
         /// <summary>
@@ -189,62 +138,51 @@ namespace ASCOM.QAstroFF
                     {
                         if (s_z == 0)
                         {
-                            SharedSerial.Connected = false;
-
                             try
                             {
                                 SharedSerial.PortName = ASCOM.QAstroFF.Properties.Settings.Default.COMPort;
-
-                                SharedSerial.ReceiveTimeoutMs = 20000;
-                                if (SharedSerial.PortName.Length > 0)
-                                {
-                                    SharedSerial.Speed = ASCOM.Utilities.SerialSpeed.ps9600;
-                                    SharedSerial.Handshake = ASCOM.Utilities.SerialHandshake.None;
-
-                                    SharedSerial.Connected = true;
-                                    System.Threading.Thread.Sleep(SERIAL_CONNECTION_TIMEOUT);    //Stupid Arduino restarts when opening port - needs to wait
-
-                                    string answer = SharedResources.rawCommand("", "i", true);
-                                    if (!answer.Contains(ASCOMIdentifier))
-                                    {
-                                        MessageBox.Show(ASCOMIdentifier + " device not detected at port " + SharedResources.SharedSerial.PortName, "Device not detected", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                        SharedResources.tl.LogMessage("Connected answer", "Wrong answer " + answer);
-                                        SharedSerial.Connected = false;
-                                    }
-                                    else
-                                        SharedSerial.Connected = true;
-                                }
-                                else
+//                                SharedSerial.ReceiveTimeoutMs = 2000;
+                                SharedSerial.Speed = ASCOM.Utilities.SerialSpeed.ps9600;
+//                                SharedSerial.Handshake = ASCOM.Utilities.SerialHandshake.None;
+                                SharedSerial.Connected = true;
+                                System.Threading.Thread.Sleep(2500);    //Stupid Arduino restarts when opening port - needs to wait
+                                string answer = SharedResources.rawCommand("i","", true);
+                                if (!answer.Contains("Q-Astro"))
                                 {
                                     SharedSerial.Connected = false;
-                                    MessageBox.Show(ASCOMIdentifier + " No COM port set", "Please do set a COM port before trying to connect.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show("QuidneArduino device not detected at port " + SharedResources.SharedSerial.PortName, "Device not detected", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    SharedResources.tl.LogMessage("Connected answer", "Wrong answer " + answer);
                                 }
+                                else
+                                    SharedSerial.Connected = true;
                             }
                             catch (System.IO.IOException exception)
                             {
-                                MessageBox.Show(ASCOMIdentifier + " Serial port not opened for " + SharedResources.SharedSerial.PortName, "Invalid port state", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                SharedSerial.Connected = false;
+                                MessageBox.Show("QuidneArduino Serial port not opened for " + SharedResources.SharedSerial.PortName, "Invalid port state", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 SharedResources.tl.LogMessage("Serial port not opened", exception.Message);
-                                Application.Exit();
                             }
                             catch (System.UnauthorizedAccessException exception)
                             {
-                                MessageBox.Show(ASCOMIdentifier + " Access denied to serial port " + SharedResources.SharedSerial.PortName, "Access denied", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                SharedSerial.Connected = false;
+                                MessageBox.Show("QuidneArduino Access denied to serial port " + SharedResources.SharedSerial.PortName, "Access denied", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 SharedResources.tl.LogMessage("Access denied to serial port", exception.Message);
-                                Application.Exit();
                             }
                             catch (ASCOM.DriverAccessCOMException exception)
                             {
-                                MessageBox.Show(ASCOMIdentifier + " ASCOM driver exception: " + exception.Message, "ASCOM driver exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                Application.Exit();
+                                SharedSerial.Connected = false;
+                                MessageBox.Show("QuidneArduino ASCOM driver exception", "ASCOM driver exception, no COM port selected", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                SharedResources.tl.LogMessage("QuidneArduino ASCOM driver exception", exception.Message);
                             }
                             catch (System.Runtime.InteropServices.COMException exception)
                             {
-                                MessageBox.Show(ASCOMIdentifier + " Serial port read timeout for port " + SharedResources.SharedSerial.PortName, "Timeout", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                SharedResources.tl.LogMessage(ASCOMIdentifier + " Serial port read timeout", exception.Message);
-                                Application.Exit();
+                                SharedSerial.Connected = false;
+                                MessageBox.Show("QuidneArduino Serial port read timeout for port " + SharedResources.SharedSerial.PortName, "Timeout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                SharedResources.tl.LogMessage("QuidneArduino Serial port read timeout", exception.Message);
                             }
                         }
-                        s_z++;
+                        if (SharedSerial.Connected)
+                            s_z++;
                     }
                     else
                     {
@@ -262,10 +200,7 @@ namespace ASCOM.QAstroFF
             get { return SharedSerial.Connected; }
         }
 
-        public static bool IsConnected()
-        {
-            return connections > 0 && SharedSerial != null && SharedSerial.Connected;
-        }
+        public static object Properties { get; private set; }
 
         #endregion
 
@@ -324,6 +259,20 @@ namespace ASCOM.QAstroFF
 
         #endregion
 
+        /// <summary>
+        /// Skeleton of a hardware class, all this does is hold a count of the connections,
+        /// in reality extra code will be needed to handle the hardware in some way
+        /// </summary>
+        public class DeviceHardware
+        {
+            internal int count { set; get; }
+
+            internal DeviceHardware()
+            {
+                count = 0;
+            }
+        }
+
         public static string rawCommand(string function, string command)
         {
             return rawCommand(function, command, false);
@@ -342,66 +291,28 @@ namespace ASCOM.QAstroFF
                 {
                     return answer.Substring(2).Trim();
                 }
-            }
 
+            }
             catch (System.TimeoutException e)
             {
-                tl.LogMessage(ASCOMIdentifier + " Timeout exception", e.Message);
+                tl.LogMessage("Q-Astro Timeout exception", e.Message);
             }
             catch (ASCOM.Utilities.Exceptions.SerialPortInUseException e)
             {
-                tl.LogMessage(ASCOMIdentifier + " Serial port in use exception", "Command: " + command + ", " + e.Message);
+                tl.LogMessage("Q-Astro Serial port in use exception", "Command: " + command + ", " + e.Message);
             }
             catch (ASCOM.NotConnectedException e)
             {
-                tl.LogMessage(ASCOMIdentifier + " Not connected exception", e.Message);
+                tl.LogMessage("Q-Astro Not connected exception", e.Message);
             }
             catch (ASCOM.DriverException e)
             {
-                tl.LogMessage(ASCOMIdentifier + " Driver exception", e.Message);
+                tl.LogMessage("Q-Astro Driver exception", e.Message);
             }
 
             return String.Empty;
         }
+
     }
 
-    /// <summary>
-    /// Skeleton of a hardware class, all this does is hold a count of the connections,
-    /// in reality extra code will be needed to handle the hardware in some way
-    /// </summary>
-    public class DeviceHardware
-    {
-        internal int count { set; get; }
-
-        internal DeviceHardware()
-        {
-            count = 0;
-        }
-    }
-
-    //#region ServedClassName attribute
-    ///// <summary>
-    ///// This is only needed if the driver is targeted at  platform 5.5, it is included with Platform 6
-    ///// </summary>
-    //[global::System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    //public sealed class ServedClassNameAttribute : Attribute
-    //{
-    //    // See the attribute guidelines at 
-    //    //  http://go.microsoft.com/fwlink/?LinkId=85236
-
-    //    /// <summary>
-    //    /// Gets or sets the 'friendly name' of the served class, as registered with the ASCOM Chooser.
-    //    /// </summary>
-    //    /// <value>The 'friendly name' of the served class.</value>
-    //    public string DisplayName { get; private set; }
-    //    /// <summary>
-    //    /// Initializes a new instance of the <see cref="ServedClassNameAttribute"/> class.
-    //    /// </summary>
-    //    /// <param name="servedClassName">The 'friendly name' of the served class.</param>
-    //    public ServedClassNameAttribute(string servedClassName)
-    //    {
-    //        DisplayName = servedClassName;
-    //    }
-    //}
-    //#endregion
 }

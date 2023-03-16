@@ -11,7 +11,6 @@ namespace ASCOM.QAstroFF
     {
         internal List<COMPortInfo> comPorts;
         internal COMPortInfo comPort;
-        internal ASCOM.Utilities.Serial serPort;
 
         public ServerSetupDialog()
         {
@@ -19,78 +18,39 @@ namespace ASCOM.QAstroFF
             InitUI();
         }      
 
-        private void btnCancel_Click(object sender, EventArgs e)
+        private void BtnCancel_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.Reload();
             Close();
         }
 
-        private void btnOK_Click(object sender, EventArgs e)
+        private void BtnOK_Click(object sender, EventArgs e)
         {
             int i = 0;
 
             foreach (DataGridViewRow row in filterDataGrid.Rows)
             {
                 Properties.Settings.Default.FilterNames[i] = row.Cells["FilterName"].Value.ToString();
-                Properties.Settings.Default.FocusOffsets[i] = row.Cells["FilterOffset"].Value.ToString();
+                Properties.Settings.Default.FocuserOffsets[i] = row.Cells["FilterOffset"].Value.ToString();
                 i++;
             }
 
             Properties.Settings.Default.Save();
         }
 
-        private void btnTestPrt_Click(object sender, EventArgs e)
+        private void SettingsChanged()
         {
-            try
-            {
-                serPort = new Serial();
-                serPort.PortName = Properties.Settings.Default.COMPort;
-                serPort.ReceiveTimeoutMs = 2000;
-                serPort.Speed = ASCOM.Utilities.SerialSpeed.ps9600;
+            SettingsChanged(true);
+        }
 
-                StatusLabel.Text = "Opening port " + serPort.PortName + " ...";
-                serPort.Connected = true;
-                toolQASetupStatus.Text = "Port " + serPort.PortName + " opened";
-                System.Threading.Thread.Sleep(1000);
-                toolQASetupStatus.Text = "Detecting Q-Astro Controller at port " + serPort.PortName + " ... ";
-                Refresh();
-                System.Threading.Thread.Sleep(2000);
-                serPort.ClearBuffers();
-                serPort.Transmit("i#");
-                string answer = serPort.ReceiveTerminated("#");
-
-//                if ((answer != null) && answer.Contains("Q-Astro Arduino"))
-                if ((answer != null) && (answer.Length>0))
-                    toolQASetupStatus.Text = "Q-Astro Controller detected";
-                else
-                { 
-                    toolQASetupStatus.Text = "Q-Astro Controller not detected";
-                    MessageBox.Show("Q-Astro Controller has not been detected.", "QuidneArduino Controller not detected", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            catch (System.IO.IOException ioe)
-            {
-                MessageBox.Show("IO Exception has been thrown: " + ioe.Message, "Port not opened", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            catch (System.UnauthorizedAccessException uae)
-            {
-                MessageBox.Show("Unauthorized access exception has been thrown: " + uae.Message, "Port not opened", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            catch (SystemException se)
-            {
-                MessageBox.Show("System exception has been thrown: " + se.Message, "Port not opened", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                if (serPort.Connected) serPort.Connected = false;
-
-                serPort.Dispose();
-            }
+        private void SettingsChanged(bool changed)
+        {
+            Properties.Settings.Default.ConfigChanged = changed;
         }
 
         private void InitUI()
         {
-            this.Text = Application.ProductName + " - " + Application.ProductVersion;
+            this.Text = this.Text + " - " + Application.ProductVersion;
             comPort = new COMPortInfo();
             comPorts = new List<COMPortInfo>();
 
@@ -109,18 +69,129 @@ namespace ASCOM.QAstroFF
                     ComPortComboBox.SelectedItem = Properties.Settings.Default.COMPort;
             }
 
-            for (int i=0; i < Properties.Settings.Default.Slots; i++)
+            switch(Properties.Settings.Default.FocuserStepMode)
+            {
+                case 1:
+                    StepResolutionCombo.SelectedItem = "1";
+                    break;
+                case 2:
+                    StepResolutionCombo.SelectedItem = "1/2";
+                    break;
+                case 4:
+                    StepResolutionCombo.SelectedItem = "1/4";
+                    break;
+                case 8:
+                    StepResolutionCombo.SelectedItem = "1/8";
+                    break;
+                case 16:
+                    StepResolutionCombo.SelectedItem = "1/16";
+                    break;
+            }
+
+            txtMaxPosition.Text = Properties.Settings.Default.FocuserMaxPos.ToString();
+            txtMaxStep.Text = Properties.Settings.Default.FocuserMaxStep.ToString();
+            txtStepSize.Text = Properties.Settings.Default.FocuserStepSize.ToString();
+
+            if (Properties.Settings.Default.FocuserMotorEnabled == 1)
+                chkMotorEnabled.Checked = true;
+            else
+                chkMotorEnabled.Checked = false;
+
+            for (int i=0; i < Properties.Settings.Default.FilterSlots; i++)
             {
                 string filterName = Properties.Settings.Default.FilterNames[i];
-                string filterOffset = Properties.Settings.Default.FocusOffsets[i];
+                string filterOffset = Properties.Settings.Default.FocuserOffsets[i];
                 filterDataGrid.Rows.Add((i+1), filterName, filterOffset);
             }
-            tabComPort.Show();
+            SettingsChanged(false);
+
+            setupTabControl.SelectedTab = tabComPort;
         }
 
         private void ComPortComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.COMPort = ComPortComboBox.GetItemText(this.ComPortComboBox.SelectedItem);
+        }
+
+        private void StepResolutionCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            String stepRes = StepResolutionCombo.GetItemText(this.StepResolutionCombo.SelectedItem);
+            int res = 1;
+
+            switch(stepRes)
+            {
+                case "1":
+                    res = 1;
+                    break;
+                case "1/2":
+                    res = 2;
+                    break;
+                case "1/4":
+                    res = 4;
+                    break;
+                case "1/8":
+                    res = 8;
+                    break;
+                case "1/16":
+                    res = 16;
+                    break;                
+            }
+
+            Properties.Settings.Default.FocuserStepMode = res;
+            SettingsChanged();
+
+        }
+
+        private void TxtStepSize_TextChanged(object sender, EventArgs e)
+        {
+            bool canConvert = long.TryParse(txtStepSize.Text, out long stepSize);
+            if (!canConvert)
+            {
+                stepSize = 10;
+                txtStepSize.Text = stepSize.ToString();
+            }
+            Properties.Settings.Default.FocuserStepSize = stepSize;
+            SettingsChanged();
+        }
+
+        private void TxtMaxStep_TextChanged(object sender, EventArgs e)
+        {
+            bool canConvert = int.TryParse(txtStepSize.Text, out int maxStep);
+            if (!canConvert)
+            {
+                maxStep = 5000;
+                txtMaxStep.Text = maxStep.ToString();
+            }
+            Properties.Settings.Default.FocuserMaxStep = maxStep;
+            SettingsChanged();
+        }
+
+        private void TxtMaxPosition_TextChanged(object sender, EventArgs e)
+        {
+            bool canConvert = int.TryParse(txtStepSize.Text, out int maxPos);
+
+            if(!canConvert)
+            {
+                maxPos = 99999;
+                txtMaxPosition.Text = maxPos.ToString();
+            }
+            Properties.Settings.Default.FocuserMaxPos = maxPos;
+            SettingsChanged();
+        }
+
+        private void ChkMotorEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkMotorEnabled.Checked)
+                Properties.Settings.Default.FocuserMotorEnabled = 1;
+            else
+                Properties.Settings.Default.FocuserMotorEnabled = 0;
+
+            SettingsChanged();
+        }
+
+        private void BtnFocuserInfo_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("If you use TMC2208 Drivers, you can not select Step Mode 1!!!", "BE AWARE!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

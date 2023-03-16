@@ -12,7 +12,7 @@ namespace ASCOM.QAstroFF.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.3.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -86,19 +86,31 @@ namespace ASCOM.QAstroFF.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public int Slots {
+        public int FilterSlots {
             get {
-                return ((int)(this["Slots"]));
+                return ((int)(this["FilterSlots"]));
             }
             set {
-                this["Slots"] = value;
+                this["FilterSlots"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int FilterPosition {
+            get {
+                return ((int)(this["FilterPosition"]));
+            }
+            set {
+                this["FilterPosition"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
-<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+<ArrayOfString xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
   <string>LP</string>
   <string>Triband</string>
   <string>H-Beta</string>
@@ -117,31 +129,91 @@ namespace ASCOM.QAstroFF.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
-<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+<ArrayOfString xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
   <string>0</string>
   <string>0</string>
   <string>0</string>
   <string>0</string>
   <string>0</string>
 </ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection FocusOffsets {
+        public global::System.Collections.Specialized.StringCollection FocuserOffsets {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["FocusOffsets"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["FocuserOffsets"]));
             }
             set {
-                this["FocusOffsets"] = value;
+                this["FocuserOffsets"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public double FocuserStepSize {
+            get {
+                return ((double)(this["FocuserStepSize"]));
+            }
+            set {
+                this["FocuserStepSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public int FocuserStepMode {
+            get {
+                return ((int)(this["FocuserStepMode"]));
+            }
+            set {
+                this["FocuserStepMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5000")]
+        public int FocuserMaxStep {
+            get {
+                return ((int)(this["FocuserMaxStep"]));
+            }
+            set {
+                this["FocuserMaxStep"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("99999")]
+        public int FocuserMaxPos {
+            get {
+                return ((int)(this["FocuserMaxPos"]));
+            }
+            set {
+                this["FocuserMaxPos"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int Position {
+        public int FocuserMotorEnabled {
             get {
-                return ((int)(this["Position"]));
+                return ((int)(this["FocuserMotorEnabled"]));
             }
             set {
-                this["Position"] = value;
+                this["FocuserMotorEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ConfigChanged {
+            get {
+                return ((bool)(this["ConfigChanged"]));
+            }
+            set {
+                this["ConfigChanged"] = value;
             }
         }
     }

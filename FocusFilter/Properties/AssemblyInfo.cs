@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Quidne IT Ltd.")]
 [assembly: AssemblyProduct("ASCOM multi-interface Server for Q-Astro FocusFilter")]
-[assembly: AssemblyCopyright("Copyright © 2021, Quidne IT Ltd.")]
+[assembly: AssemblyCopyright("Copyright © 2023, Quidne IT Ltd.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -28,5 +28,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("2.0.7")]
-[assembly: AssemblyFileVersion("2.0.7.0")]
+[assembly: AssemblyVersion("2.5.0")]
+[assembly: AssemblyFileVersion("2.5.0.0")]

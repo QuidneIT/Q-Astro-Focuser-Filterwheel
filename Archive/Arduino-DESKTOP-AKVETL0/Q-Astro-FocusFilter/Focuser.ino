@@ -60,8 +60,6 @@
 #define FOCUS_DEF_STEPSIZE 10
 #define FOCUS_DEF_STARTPOSITION 0    // Define the Start Position of the Focuser when the system is started.
 
-#define FOCUS_DEF_MOTORENABLE 0    // Define default if the Stepper should be disabled after a move or not (0 = disabled, 1 = enabled)
-
 DRV8825 focuser(FOCUS_MOTOR_FREQ, FOCUS_DIR_PIN, FOCUS_STEP_PIN, FOCUS_ENABLE_PIN, FOCUS_MS0_PIN, FOCUS_MS1_PIN, FOCUS_MS2_PIN);
 
 long focusPos;
@@ -69,7 +67,6 @@ long stepSize;
 int  stepMode;
 int  maxStep;
 long maxPosition;
-int  motorenable;
 
 int isMoving = 0;
 
@@ -123,16 +120,7 @@ void InitFocuser()
   focuser.begin(FOCUS_MOTOR_SPEED);
   // if using enable/disable on ENABLE pin (active LOW) instead of SLEEP uncomment next line
   focuser.setEnableActiveState(LOW);
-
-  InitMotorEnable();
-}
-
-void InitMotorEnable()
-{
   focuser.disable();
-
-  if (motorenable==1)
-    focuser.enable();
 }
 
 /* Start of Focuser functions */
@@ -149,20 +137,12 @@ void DoFocuserAction(String ASCOMcmd)
         break;
       case 'A':   //Set Max Step
         maxStep = ASCOMcmd.substring(1).toInt();
-        UpdateFocuserEEPROMData();
+        focusEEPROMSave(); 
+        focusEEPROMLoad();         
         SendSerialCommand(focuserId,maxStep);
         break;
       case 'b':  //Is the focuser moving
         SendSerialCommand(focuserId,isMoving);
-        break;
-      case 'd':   //Get if the motor will be enabled or disabled after a move.
-        SendSerialCommand(focuserId,motorenable);
-        break;
-      case 'D':   //Set if the motor is disabled after move or not.
-        motorenable = ASCOMcmd.substring(1).toInt();      
-        UpdateFocuserEEPROMData();
-        InitMotorEnable();       
-        SendSerialCommand(focuserId,motorenable);
         break;
       case 'f':  //Move to position f absolute focusing
         xSteps = ASCOMcmd.substring(1).toInt();
@@ -172,12 +152,13 @@ void DoFocuserAction(String ASCOMcmd)
         xSteps = ASCOMcmd.substring(1).toInt();
         MoveFocuserAndReduce(xSteps); 
         break;
-      case 'n':  //Get Step Mode
+      case 'n':  //Get Step Resolution
         SendSerialCommand(focuserId,stepMode);  
         break;
       case 'N':  //Set Step Mode
         stepMode = ASCOMcmd.substring(1).toInt();
-        UpdateFocuserEEPROMData();
+        focusEEPROMSave();
+        focusEEPROMLoad();
         SetStepModeFocuser();
         SendSerialCommand(focuserId,stepMode);          
         break;
@@ -186,7 +167,8 @@ void DoFocuserAction(String ASCOMcmd)
         break;
       case 'r': //Reset focusser position to 0
         focusPos = 0;
-        UpdateFocuserEEPROMData();
+        focusEEPROMSave();
+        focusEEPROMLoad();
         SendSerialCommand(focuserId,focusPos);          
         break;
       case 's':  //Get Stepsize
@@ -194,7 +176,8 @@ void DoFocuserAction(String ASCOMcmd)
         break;
       case 'S':  //Set StepSize
         stepSize = ASCOMcmd.substring(1).toInt();
-        UpdateFocuserEEPROMData();
+        focusEEPROMSave();
+        focusEEPROMLoad();
         SendSerialCommand(focuserId, stepSize);          
         break;
       case 'x':  //Get Max Position
@@ -202,13 +185,10 @@ void DoFocuserAction(String ASCOMcmd)
         break;
       case 'X':  //Set Max Position
         maxPosition = ASCOMcmd.substring(1).toInt();
-        UpdateFocuserEEPROMData();
+        focusEEPROMSave();
+        focusEEPROMLoad();
         SendSerialCommand(focuserId,maxPosition);
         break;
-      case 'y':
-        if (motorenable==1)
-          focuser.disable();        
-        break;      
       case 'z':
         focusEEPROMReset();
         SendSerialCommand(focuserId,"EEPROM Reset");
@@ -248,14 +228,13 @@ void MoveFocuserAndReduce(long steps)
 
 void SetFocuserPosition(long steps, bool reportBack)
 {
-  if (motorenable==0)
-    focuser.enable();
+
+  focuser.enable();
 
   SetStepModeFocuser();
   focuser.move(stepMode * steps * FOCUS_DIRECTION);  
   
-  if (motorenable==0)
-    focuser.disable();
+  focuser.disable();
 
   focusPos = focusPos + steps;
   focusEEPROMSave();
